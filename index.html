@@ -55,6 +55,7 @@
       margin-top: 20px;
     }
   </style>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
@@ -83,11 +84,30 @@
       yesBtn.style.transform = `scale(${yesScale})`;
     });
 
-    yesBtn.addEventListener("click", () => {
-      container.innerHTML = "";
-      message.style.display = "block";
-      container.appendChild(message);
+yesBtn.addEventListener("click", () => {
+  // confetti burst
+  confetti({
+    particleCount: 150,
+    spread: 70,
+    origin: { y: 0.6 }
+  });
+
+  // second burst
+  setTimeout(() => {
+    confetti({
+      particleCount: 100,
+      spread: 100,
+      origin: { y: 0.6 }
     });
+  }, 300);
+
+  // show message
+  setTimeout(() => {
+    container.innerHTML = "";
+    message.style.display = "block";
+    container.appendChild(message);
+  }, 600);
+});
   </script>
 
 </body>
