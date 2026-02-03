@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Prom?</title>
 
-  <!-- confetti library -->
+  <!-- confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>
@@ -14,19 +14,39 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
       font-family: Arial, sans-serif;
-      /* ❌ removed overflow:hidden so confetti shows */
+
+      /* animated gradient */
+      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #ffd1ff, #a1c4fd);
+      background-size: 400% 400%;
+      animation: gradientMove 12s ease infinite;
+    }
+
+    @keyframes gradientMove {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    /* floating dots canvas */
+    #particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
     }
 
     .container {
       text-align: center;
-      background: white;
+      background: rgba(255,255,255,0.95);
       padding: 40px;
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
       position: relative;
       z-index: 2;
+      backdrop-filter: blur(6px);
     }
 
     h1 {
@@ -37,9 +57,9 @@
       font-size: 18px;
       padding: 15px 30px;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
-      transition: transform 0.3s ease;
+      transition: transform 0.25s ease;
       position: relative;
     }
 
@@ -59,66 +79,80 @@
 
     #message {
       display: none;
-      font-size: 24px;
+      font-size: 26px;
       margin-top: 20px;
+      font-weight: bold;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container" id="container">
-    <h1>Will you go to prom with me?</h1>
-    <button id="yesBtn">Yes</button>
-    <button id="noBtn">No</button>
-    <div id="message">🎉 Yay! 🎨</div>
-  </div>
+<!-- floating dots -->
+<canvas id="particles"></canvas>
 
-  <script>
-    const noBtn = document.getElementById("noBtn");
-    const yesBtn = document.getElementById("yesBtn");
-    const message = document.getElementById("message");
-    const container = document.getElementById("container");
+<div class="container" id="container">
+  <h1>Will you go to prom with me?</h1>
+  <button id="yesBtn">Yes</button>
+  <button id="noBtn">No</button>
+  <div id="message">🎉 Yay! 🎨</div>
+</div>
 
-    let yesScale = 1;
+<script>
+/* FLOATING DOTS */
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
 
-    // move the NO button
-    noBtn.addEventListener("mouseover", () => {
-      const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-      const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-      yesScale += 0.1;
-      yesBtn.style.transform = `scale(${yesScale})`;
-    });
+let dots = [];
 
-    // YES button
-    yesBtn.addEventListener("click", () => {
-      // big confetti burst
-      confetti({
-        particleCount: 200,
-        spread: 90,
-        origin: { y: 0.6 }
-      });
+for (let i = 0; i < 70; i++) {
+  dots.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    size: Math.random() * 2.5,
+    speed: Math.random() * 0.6 + 0.2
+  });
+}
 
-      // second burst
-      setTimeout(() => {
-        confetti({
-          particleCount: 150,
-          spread: 120,
-          origin: { y: 0.6 }
-        });
-      }, 300);
+function animateDots() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // show message
-      setTimeout(() => {
-        container.innerHTML = "";
-        message.style.display = "block";
-        container.appendChild(message);
-      }, 700);
-    });
-  </script>
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
 
-</body>
-</html>
+  dots.forEach(dot => {
+    ctx.beginPath();
+    ctx.arc(dot.x, dot.y, dot.size, 0, Math.PI * 2);
+    ctx.fill();
+
+    dot.y -= dot.speed;
+
+    if (dot.y < 0) {
+      dot.y = canvas.height;
+      dot.x = Math.random() * canvas.width;
+    }
+  });
+
+  requestAnimationFrame(animateDots);
+}
+
+animateDots();
+
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+
+/* BUTTON LOGIC */
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const message = document.getElementById("message");
+const container = document.getElementById("container");
+
+let yesScale = 1;
+
+noBtn.addEventListener("mouseover", () => {
+  const x = Math.random(
