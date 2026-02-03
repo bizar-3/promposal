@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Miley, Prom?</title>
+
+  <!-- confetti library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
   <style>
     body {
       height: 100vh;
@@ -12,7 +16,7 @@
       align-items: center;
       background: linear-gradient(135deg, #ff9a9e, #fad0c4);
       font-family: Arial, sans-serif;
-      overflow: hidden;
+      /* ❌ removed overflow:hidden so confetti shows */
     }
 
     .container {
@@ -21,6 +25,8 @@
       padding: 40px;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 2;
     }
 
     h1 {
@@ -47,6 +53,8 @@
       background-color: #f44336;
       color: white;
       position: absolute;
+      left: 55%;
+      top: 60%;
     }
 
     #message {
@@ -55,8 +63,8 @@
       margin-top: 20px;
     }
   </style>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
+
 <body>
 
   <div class="container" id="container">
@@ -74,6 +82,7 @@
 
     let yesScale = 1;
 
+    // move the NO button
     noBtn.addEventListener("mouseover", () => {
       const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
       const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
@@ -84,30 +93,31 @@
       yesBtn.style.transform = `scale(${yesScale})`;
     });
 
-yesBtn.addEventListener("click", () => {
-  // confetti burst
-  confetti({
-    particleCount: 150,
-    spread: 70,
-    origin: { y: 0.6 }
-  });
+    // YES button
+    yesBtn.addEventListener("click", () => {
+      // big confetti burst
+      confetti({
+        particleCount: 200,
+        spread: 90,
+        origin: { y: 0.6 }
+      });
 
-  // second burst
-  setTimeout(() => {
-    confetti({
-      particleCount: 100,
-      spread: 100,
-      origin: { y: 0.6 }
+      // second burst
+      setTimeout(() => {
+        confetti({
+          particleCount: 150,
+          spread: 120,
+          origin: { y: 0.6 }
+        });
+      }, 300);
+
+      // show message
+      setTimeout(() => {
+        container.innerHTML = "";
+        message.style.display = "block";
+        container.appendChild(message);
+      }, 700);
     });
-  }, 300);
-
-  // show message
-  setTimeout(() => {
-    container.innerHTML = "";
-    message.style.display = "block";
-    container.appendChild(message);
-  }, 600);
-});
   </script>
 
 </body>
