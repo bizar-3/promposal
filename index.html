@@ -103,4 +103,153 @@ button{
 <div class="container" id="container">
 <h1>Will you go to prom with me?</h1>
 <button id="yesBtn">Yes</button>
-<butto
+<button id="noBtn">No</button>
+<div id="message">🎉 Yay! 🎨</div>
+</div>
+
+<script>
+
+/* ---------- FLOATING DOTS ---------- */
+
+const bgCanvas=document.getElementById("particles");
+const bgCtx=bgCanvas.getContext("2d");
+
+function resize(){
+  bgCanvas.width=window.innerWidth;
+  bgCanvas.height=window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
+
+let dots=[];
+
+for(let i=0;i<70;i++){
+  dots.push({
+    x:Math.random()*bgCanvas.width,
+    y:Math.random()*bgCanvas.height,
+    size:Math.random()*2.5,
+    speed:Math.random()*.6+.2
+  });
+}
+
+function animateDots(){
+  bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
+  bgCtx.fillStyle="rgba(255,255,255,.7)";
+
+  dots.forEach(dot=>{
+    bgCtx.beginPath();
+    bgCtx.arc(dot.x,dot.y,dot.size,0,Math.PI*2);
+    bgCtx.fill();
+
+    dot.y-=dot.speed;
+
+    if(dot.y<0){
+      dot.y=bgCanvas.height;
+      dot.x=Math.random()*bgCanvas.width;
+    }
+  });
+
+  requestAnimationFrame(animateDots);
+}
+animateDots();
+
+
+
+/* ---------- MOUSE SPARKLES ---------- */
+
+const sparkCanvas=document.getElementById("sparkles");
+const sparkCtx=sparkCanvas.getContext("2d");
+
+function resizeSpark(){
+  sparkCanvas.width=window.innerWidth;
+  sparkCanvas.height=window.innerHeight;
+}
+resizeSpark();
+window.addEventListener("resize",resizeSpark);
+
+let sparks=[];
+
+window.addEventListener("mousemove",(e)=>{
+  for(let i=0;i<2;i++){
+    sparks.push({
+      x:e.clientX,
+      y:e.clientY,
+      size:Math.random()*3+1,
+      life:40
+    });
+  }
+});
+
+function animateSparks(){
+  sparkCtx.clearRect(0,0,sparkCanvas.width,sparkCanvas.height);
+
+  sparks.forEach((s,i)=>{
+    sparkCtx.fillStyle="white";
+    sparkCtx.fillRect(s.x,s.y,s.size,s.size);
+
+    s.life--;
+    s.y-=1;
+
+    if(s.life<=0) sparks.splice(i,1);
+  });
+
+  requestAnimationFrame(animateSparks);
+}
+animateSparks();
+
+
+
+/* ---------- BUTTON LOGIC ---------- */
+
+const noBtn=document.getElementById("noBtn");
+const yesBtn=document.getElementById("yesBtn");
+const message=document.getElementById("message");
+const container=document.getElementById("container");
+
+let yesScale=1;
+
+/* ⭐ KEEP NO BUTTON INSIDE SCREEN */
+noBtn.addEventListener("mouseover",()=>{
+
+  const padding=20;
+
+  const maxX=window.innerWidth-noBtn.offsetWidth-padding;
+  const maxY=window.innerHeight-noBtn.offsetHeight-padding;
+
+  const x=Math.random()*maxX;
+  const y=Math.random()*maxY;
+
+  noBtn.style.left=x+"px";
+  noBtn.style.top=y+"px";
+
+  yesScale+=0.1;
+  yesBtn.style.transform=`scale(${yesScale})`;
+});
+
+
+yesBtn.addEventListener("click",()=>{
+
+  confetti({
+    particleCount:250,
+    spread:120,
+    origin:{y:.6}
+  });
+
+  setTimeout(()=>{
+    confetti({
+      particleCount:180,
+      spread:140
+    });
+  },250);
+
+  setTimeout(()=>{
+    container.innerHTML="";
+    message.style.display="block";
+    container.appendChild(message);
+  },700);
+
+});
+
+</script>
+</body>
+</html>
